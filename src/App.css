@@ -1,0 +1,17 @@
+.page__title {
+  display: block !important;
+  text-align: center;
+  font-size: 2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.form__container {
+  width: 400px;
+  margin: 0 auto;
+}
+
+.content {
+  height: 88%;
+  width: 100%;
+}
