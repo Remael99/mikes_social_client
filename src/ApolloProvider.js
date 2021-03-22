@@ -9,7 +9,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 
 const httplink = createHttpLink({
-  uri: "http://localhost:5000/",
+  uri: "https://warm-badlands-28360.herokuapp.com/",
   onError: ({ networkError, graphQLErrors }) => {
     console.log("graphQLErrors", graphQLErrors);
     console.log("networkError", networkError);
