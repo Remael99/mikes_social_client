@@ -9,6 +9,7 @@ import Register from "./Pages/Register";
 import { AuthProvider } from "./Context/Auth";
 import AuthRoute from "./utils/AuthRoute";
 import Post from "./Pages/Post";
+import Profile from "./Pages/Profile";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <AuthRoute exact path="/login" component={Login} />
           <AuthRoute exact path="/register" component={Register} />
           <Route exact path="/posts/:postId" component={Post} />
+          <Route exact path="/:username/profile" component={Profile} />
         </Container>
       </Router>
     </AuthProvider>

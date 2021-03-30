@@ -33,7 +33,7 @@ const Home = () => {
       </Grid.Row>
       <Grid.Row>
         {loading ? (
-          <h1>loading...</h1>
+          <h1>Loading...</h1>
         ) : (
           posts &&
           posts.map((post) => (

@@ -25,7 +25,6 @@ const Register = () => {
 
   const [addUser, { loading }] = useMutation(REGISTER_USER, {
     update(_, { data: { register: userData } }) {
-      console.log(userData);
       context.login(userData);
       history.push("/");
     },

@@ -1,17 +1,17 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import moment from "moment";
 import React, { useContext, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import {
   Button,
   Card,
-  Dimmer,
+  Form,
   Grid,
   Header,
   Icon,
   Image,
   Label,
-  Loader,
+  Modal,
   Popup,
 } from "semantic-ui-react";
 import Comments from "../components/Comments";
@@ -31,18 +31,52 @@ const Post = () => {
     },
   });
 
+  const [comment, setComment] = useState("");
+
+  const [addComment] = useMutation(CREATE_COMMENT, {
+    variables: {
+      postId,
+      body: comment,
+    },
+    update(proxy, result) {
+      setComment("");
+      const newComment = result.data.createComment;
+
+      console.log(newComment);
+      const data = proxy.readQuery({
+        query: FETCH_SINGLE_POST,
+        variables: {
+          postId: newComment.id,
+          body: comment,
+        },
+      });
+      proxy.writeQuery({
+        query: FETCH_SINGLE_POST,
+        variables: {
+          postId: newComment.id,
+          body: comment,
+        },
+        data: {
+          getUser: [{ newComment, ...data?.getPost }],
+        },
+      });
+      setOpen(false);
+    },
+    onError: ({ networkError, graphQLErrors }) => {
+      console.log("graphQLErrors", graphQLErrors);
+      console.log("networkError", networkError);
+    },
+  });
+
   const getPost = data?.getPost;
 
   const deleteButtonCallback = () => {
     history.replace("/");
   };
+
   let postMarkup;
   if (!getPost) {
-    postMarkup = (
-      <Dimmer>
-        <Loader>Loading</Loader>
-      </Dimmer>
-    );
+    postMarkup = <h1>loading...</h1>;
   } else {
     const {
       id,
@@ -101,7 +135,7 @@ const Post = () => {
 
                 {user && user?.username === username && (
                   <DeleteButton
-                    post={{ id }}
+                    post={getPost}
                     callback={deleteButtonCallback}
                     user={user}
                   />
@@ -111,19 +145,56 @@ const Post = () => {
             <Header as="h3" dividing>
               Comments
             </Header>
-            {comments &&
+            {comments.length !== 0 ? (
               comments.map((comment) => (
                 <Comments
                   key={comment.id}
-                  postId={{ id }}
+                  postId={id}
                   user={user}
                   comment={comment}
                   open={open}
                   setOpen={setOpen}
                 />
-              ))}
+              ))
+            ) : (
+              <h3> no comments at the moment! click comment button to add</h3>
+            )}
           </Grid.Column>
         </Grid.Row>
+        <Modal
+          closeIcon
+          open={open}
+          onClose={() => setOpen(false)}
+          onOpen={() => setOpen(true)}
+          style={{ width: "500px", height: "250px" }}
+        >
+          <Modal.Content>
+            <Form>
+              <h2>post comment </h2>
+              <Form.Field>
+                <Form.Input
+                  placeholder="sssup dear people"
+                  name="body"
+                  onChange={(e) => setComment(e.target.value)}
+                  value={comment}
+                />
+              </Form.Field>
+              <Button
+                disabled={comment.trim() === ""}
+                type="submit"
+                color="green"
+                onClick={addComment}
+              >
+                Comment
+              </Button>
+            </Form>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button type="submit" color="red" onClick={() => setOpen(false)}>
+              cancel
+            </Button>
+          </Modal.Actions>
+        </Modal>
       </Grid>
     );
   }
@@ -145,6 +216,22 @@ const FETCH_SINGLE_POST = gql`
         id
         username
         body
+        createdAt
+      }
+      commentCount
+    }
+  }
+`;
+
+const CREATE_COMMENT = gql`
+  mutation addcomment($postId: ID!, $body: String!) {
+    createComment(postId: $postId, body: $body) {
+      id
+      username
+      comments {
+        id
+        body
+        username
         createdAt
       }
       commentCount

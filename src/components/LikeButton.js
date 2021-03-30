@@ -16,6 +16,13 @@ const LikeButton = ({ post: { id, likes, likeCount }, user }) => {
 
   const [addlikePost] = useMutation(LIKE_POST, {
     variables: { postId: id },
+    onError({ graphQLErrors }) {
+      if (graphQLErrors) {
+        console.log(graphQLErrors[0].extensions.exception.errors);
+      }
+
+      // err && setErrors(err?.graphQLErrors[0]?.extensions.exception.errors);
+    },
   });
 
   const likeButton = user ? (

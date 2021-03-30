@@ -7,7 +7,16 @@ import LikeButton from "./LikeButton";
 import DeleteButton from "./DeleteButton";
 
 const PostCard = ({
-  post: { username, body, createdAt, likeCount, commentCount, likes, id },
+  post: {
+    username,
+    body,
+    createdAt,
+    postImage,
+    likeCount,
+    commentCount,
+    likes,
+    id,
+  },
 }) => {
   const { user } = useContext(AuthContext);
 
@@ -15,13 +24,33 @@ const PostCard = ({
   return (
     <Card fluid>
       <Image
-        src="https://react.semantic-ui.com/images/avatar/large/matthew.png"
+        src={
+          postImage
+            ? postImage
+            : "https://react.semantic-ui.com/images/avatar/large/matthew.png"
+        }
+        style={{ height: "50%" }}
         wrapped
         ui={false}
       />
 
       <Card.Content>
-        <Card.Header>{username}</Card.Header>
+        <Card.Header style={{ paddingBottom: "5px" }}>
+          <Popup
+            content="view profile"
+            inverted
+            trigger={
+              <Image
+                as={Link}
+                to={user ? `/${username}/profile` : `/login`}
+                src="https://react.semantic-ui.com/images/wireframe/square-image.png"
+                avatar
+              />
+            }
+          />
+
+          <span style={{ padding: "5px" }}>{username}</span>
+        </Card.Header>
         <Card.Meta as={Link} to={`posts/${id}`}>
           {moment(createdAt).fromNow(true)}
         </Card.Meta>

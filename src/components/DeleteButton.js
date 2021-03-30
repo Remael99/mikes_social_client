@@ -3,7 +3,7 @@ import { Button, Confirm, Icon, Popup } from "semantic-ui-react";
 import { gql, useMutation } from "@apollo/client";
 import { FETCH_ALL_POSTS } from "../utils/graphql";
 
-const DeleteButton = ({ post: { id }, commentId, callback }) => {
+const DeleteButton = ({ post: postId, commentId, callback }) => {
   const [open, setOpen] = useState(false);
 
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_MUTATION;
@@ -14,12 +14,20 @@ const DeleteButton = ({ post: { id }, commentId, callback }) => {
       if (!commentId) {
         const data = proxy.readQuery({
           query: FETCH_ALL_POSTS,
+          variables: {
+            postId,
+            commentId,
+          },
         });
 
         proxy.writeQuery({
           query: FETCH_ALL_POSTS,
+          variables: {
+            postId,
+            commentId,
+          },
           data: {
-            getPosts: data.getPosts.filter((post) => post.id !== id),
+            getPosts: data.getPosts.filter((post) => post.id !== postId),
           },
         });
       }
@@ -27,8 +35,12 @@ const DeleteButton = ({ post: { id }, commentId, callback }) => {
       if (callback) callback();
     },
     variables: {
-      postId: id,
+      postId,
       commentId,
+    },
+    onError: ({ networkError, graphQLErrors }) => {
+      console.log("graphQLErrors", graphQLErrors);
+      console.log("networkError", networkError);
     },
   });
   return (
