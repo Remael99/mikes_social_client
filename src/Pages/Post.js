@@ -42,7 +42,6 @@ const Post = () => {
       setComment("");
       const newComment = result.data.createComment;
 
-      console.log(newComment);
       const data = proxy.readQuery({
         query: FETCH_SINGLE_POST,
         variables: {
