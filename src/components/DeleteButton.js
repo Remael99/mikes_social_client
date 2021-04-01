@@ -5,7 +5,7 @@ import { FETCH_ALL_POSTS } from "../utils/graphql";
 
 const DeleteButton = ({ post: id, commentId, callback }) => {
   const [open, setOpen] = useState(false);
-  const postId = id.id;
+  const postId = id;
 
   const mutation = commentId ? DELETE_COMMENT_MUTATION : DELETE_MUTATION;
 
@@ -40,8 +40,12 @@ const DeleteButton = ({ post: id, commentId, callback }) => {
       commentId,
     },
     onError: ({ networkError, graphQLErrors }) => {
-      console.log("graphQLErrors", graphQLErrors);
-      console.log("networkError", networkError);
+      if (graphQLErrors) {
+        console.log("graphQLErrors", graphQLErrors);
+      }
+      if (networkError) {
+        console.log("networkError", networkError);
+      }
     },
   });
   return (

@@ -12,7 +12,7 @@ const Home = () => {
 
   const posts = data?.getPosts;
   return (
-    <Grid columns="three">
+    <Grid columns="three" stackable>
       <Grid.Row>
         {user && (
           <Grid.Column
